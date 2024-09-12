@@ -5,7 +5,8 @@ def render(pairing):
     show_cheese = P(f'Cheese: {pairing.cheese} - {pairing.cheese_desc} - {pairing.cheese_rat}')
     show_wine = P(f'Wine: {pairing.wine} - {pairing.wine_desc} - {pairing.wine_rat}')
     show_book = P(f'Book: {pairing.book} - {pairing.book_desc} - {pairing.book_rat}')
-    return Li(pairing_number, Ul(show_cheese, show_book, show_wine), id=f'pairing-{pairing.id}')
+    delete_link = Button('delete', hx_delete=f'/delete/{pairing.id}', hx_swap='outerHTML')
+    return Li(pairing_number, Ul(show_cheese, show_book, show_wine), delete_link, id=f'pairing-{pairing.id}')
     
 
 app,rt,cheesewine, Pairing = fast_app('data/cheesewine.db', render, id=int, cheese=str, wine=str, book=str, wine_desc=str, cheese_desc=str, book_desc=str, cheese_rat=int, wine_rat=int, book_rat=int, pk='id')
@@ -43,7 +44,10 @@ def post(pairing:Pairing):
         Select(*[Option(str(i), value =str(i)) for i in range(1, 11)], type="dropdown", id="book-rat", name="book_rat", hx_swap_oob='true')
     )
     
-
+@rt("/delete/{id}")
+def delete(id:int):
+    cheesewine.delete(id)
+    return Redirect("/")
 
 
 
